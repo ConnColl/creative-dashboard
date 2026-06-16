@@ -1,0 +1,209 @@
+import { useState } from "react";
+import DashboardCard from "./DashboardCard";
+
+const initialProjects = [
+  {
+    id: 1,
+    name: "Nike Summer Campaign",
+    creativeType: "Display Banner",
+    priority: "Urgent",
+    status: "Submitted",
+  },
+  {
+    id: 2,
+    name: "Coca-Cola Social Assets",
+    creativeType: "Social Post",
+    priority: "Urgent",
+    status: "In Progress",
+  },
+  {
+    id: 3,
+    name: "Spotify Banner Refresh",
+    creativeType: "Display Banner",
+    priority: "Normal",
+    status: "Completed",
+  },
+];
+
+function App() {
+  const [projectList, setProjectList] = useState(initialProjects);
+
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newCreativeType, setNewCreativeType] = useState("");
+  const [newStatus, setNewStatus] = useState("Submitted");
+  const [newPriority, setNewPriority] = useState("Medium");
+
+  const submittedProjects = projectList.filter(
+    (project) => project.status === "Submitted"
+  ).length;
+
+  const inProgressProjects = projectList.filter(
+    (project) => project.status === "In Progress"
+  ).length;
+
+  const completedProjects = projectList.filter(
+    (project) => project.status === "Completed"
+  ).length;
+
+  function addProject() {
+    if (!newProjectName.trim()) return;
+
+    const newProject = {
+      id: projectList.length + 1,
+      name: newProjectName,
+      creativeType: newCreativeType,
+      priority: newPriority,
+      status: newStatus,
+    };
+
+    setProjectList([...projectList, newProject]);
+
+    setNewProjectName("");
+    setNewCreativeType("");
+    setNewStatus("Submitted");
+    setNewPriority("Medium");
+  }
+
+  function updateProjectStatus(projectId, newStatus) {
+    const updatedProjects = projectList.map((project) => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          status: newStatus,
+        };
+      }
+
+      return project;
+    });
+
+    setProjectList(updatedProjects);
+  }
+
+  return (
+    <div>
+     <h1 className="text-4xl font-bold">
+  Creative Operations Dashboard
+</h1>
+
+      <DashboardCard
+        title="Submitted"
+        value={submittedProjects}
+      />
+
+      <DashboardCard
+        title="In Progress"
+        value={inProgressProjects}
+      />
+
+      <DashboardCard
+        title="Completed"
+        value={completedProjects}
+      />
+
+      <h2>Create Request</h2>
+
+      <input
+        type="text"
+        placeholder="Project Name"
+        value={newProjectName}
+        onChange={(event) =>
+          setNewProjectName(event.target.value)
+        }
+      />
+
+      <br />
+      <br />
+
+      <input
+        type="text"
+        placeholder="Creative Type"
+        value={newCreativeType}
+        onChange={(event) =>
+          setNewCreativeType(event.target.value)
+        }
+      />
+
+      <br />
+      <br />
+
+      <select
+        value={newStatus}
+        onChange={(event) =>
+          setNewStatus(event.target.value)
+        }
+      >
+        <option value="Submitted">Submitted</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+
+      <br />
+      <br />
+
+      <select
+        value={newPriority}
+        onChange={(event) =>
+          setNewPriority(event.target.value)
+        }
+      >
+        <option value="Urgent">Urgent (1-3 Days)</option>
+        <option value="Medium">Medium (4-6 Days)</option>
+        <option value="Normal">Normal (7-10 Days)</option>
+      </select>
+
+      <br />
+      <br />
+
+      <button onClick={addProject}>
+        Add Project
+      </button>
+
+      <h2>Projects</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Creative Type</th>
+            <th>Priority</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {projectList.map((project) => (
+            <tr key={project.id}>
+              <td>{project.name}</td>
+              <td>{project.creativeType}</td>
+              <td>{project.priority}</td>
+
+              <td>
+                <select
+                  value={project.status}
+                  onChange={(event) =>
+                    updateProjectStatus(
+                      project.id,
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="Submitted">
+                    Submitted
+                  </option>
+                  <option value="In Progress">
+                    In Progress
+                  </option>
+                  <option value="Completed">
+                    Completed
+                  </option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default App;
